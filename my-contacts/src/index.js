@@ -1,15 +1,12 @@
 const express = require('express');
 
+const routes = require('./routes');
+
 const app = express();
 
-app.get('/', (request, response) => {
-  response.send('Hello, world!');
-});
+app.use(express.json());
+app.use(routes);
 
-const LOCAL_APP_PORT = 3000;
-
-app.listen(
-  LOCAL_APP_PORT,
-  // eslint-disable-next-line no-console
-  () => console.log(`🔥 Server started at http://localhost:${LOCAL_APP_PORT}`),
+app.listen(3000, () =>
+  console.log(`🔥 Server started at http://localhost:3000`),
 );
