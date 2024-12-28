@@ -1,135 +1,74 @@
-const { randomUUID } = require('node:crypto');
-
-let contacts = [
-  {
-    id: randomUUID(),
-    nome: 'Eddard Stark',
-    email: 'eddard.stark@example.com',
-    phone: '+55 81 91234-5678',
-    category_id: randomUUID(),
-  },
-  {
-    id: randomUUID(),
-    nome: 'Jon Snow',
-    email: 'jon.snow@example.com',
-    phone: '+55 81 92345-6789',
-    category_id: randomUUID(),
-  },
-  {
-    id: randomUUID(),
-    nome: 'Daenerys Targaryen',
-    email: 'daenerys.targaryen@example.com',
-    phone: '+55 81 93456-7890',
-    category_id: randomUUID(),
-  },
-  {
-    id: randomUUID(),
-    nome: 'Tyrion Lannister',
-    email: 'tyrion.lannister@example.com',
-    phone: '+55 81 94567-8901',
-    category_id: randomUUID(),
-  },
-  {
-    id: randomUUID(),
-    nome: 'Cersei Lannister',
-    email: 'cersei.lannister@example.com',
-    phone: '+55 81 95678-9012',
-    category_id: randomUUID(),
-  },
-  {
-    id: randomUUID(),
-    nome: 'Arya Stark',
-    email: 'arya.stark@example.com',
-    phone: '+55 81 96789-0123',
-    category_id: randomUUID(),
-  },
-  {
-    id: randomUUID(),
-    nome: 'Sansa Stark',
-    email: 'sansa.stark@example.com',
-    phone: '+55 81 97890-1234',
-    category_id: randomUUID(),
-  },
-  {
-    id: randomUUID(),
-    nome: 'Bran Stark',
-    email: 'bran.stark@example.com',
-    phone: '+55 81 98901-2345',
-    category_id: randomUUID(),
-  },
-  {
-    id: randomUUID(),
-    nome: 'Jaime Lannister',
-    email: 'jaime.lannister@example.com',
-    phone: '+55 81 89012-3456',
-    category_id: randomUUID(),
-  },
-  {
-    id: randomUUID(),
-    nome: 'Robert Baratheon',
-    email: 'robert.baratheon@example.com',
-    phone: '+55 81 90123-4567',
-    category_id: randomUUID(),
-  },
-];
+const db = require('../../database');
 
 class ContactRepository {
-  findAll() {
-    return new Promise((resolve) => {
-      resolve(contacts);
-    });
+  async findAll(orderBy = 'ASC') {
+    const direction = orderBy.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+
+    const rows = await db.query(
+      `SELECT * FROM contacts ORDER BY name ${direction}`,
+    );
+
+    return rows;
   }
 
-  findById(id) {
-    return new Promise((resolve) => {
-      resolve(contacts.find((contact) => contact.id === id));
-    });
+  async findById(id) {
+    const [row] = await db.query(
+      `
+        SELECT * FROM contacts
+        WHERE id = $1
+      `,
+      [id],
+    );
+    return row;
   }
 
-  findByEmail(email) {
-    return new Promise((resolve) => {
-      resolve(contacts.find((contact) => contact.email === email));
-    });
+  async findByEmail(email) {
+    const [row] = await db.query(
+      `
+        SELECT * FROM contacts
+        WHERE email = $1
+      `,
+      [email],
+    );
+
+    return row;
   }
 
-  delete(id) {
-    return new Promise((resolve) => {
-      contacts = contacts.filter((contact) => contact.id !== id);
-      resolve();
-    });
+  async create({ name, email, phone, category_id }) {
+    const [row] = await db.query(
+      `
+        INSERT INTO contacts(name, email, phone, category_id)
+        VALUES($1, $2, $3, $4)
+        RETURNING *
+      `,
+      [name, email, phone, category_id],
+    );
+
+    return row;
   }
 
-  create({ name, email, phone, category_id }) {
-    return new Promise((resolve) => {
-      const newContact = {
-        id: randomUUID(),
-        name,
-        email,
-        phone,
-        category_id,
-      };
-
-      contacts.push(newContact);
-      resolve(newContact);
-    });
+  async update(id, { name, email, phone, category_id }) {
+    const [row] = await db.query(
+      `
+        UPDATE contacts
+        SET name = $1, email = $2, phone = $3, category_id = $4
+        WHERE id = $5
+      `,
+      [name, email, phone, category_id, id],
+    );
+    return row;
   }
 
-  update(id, { name, email, phone, category_id }) {
-    return new Promise((resolve) => {
-      const updatedContact = {
-        id,
-        name,
-        email,
-        phone,
-        category_id,
-      };
+  async delete(id) {
+    const deleteOperation = await db.query(
+      `
+        DELETE FROM contacts
+        WHERE id = $1
+      `,
+      [id],
+    );
 
-      contacts = contacts.map((contact) =>
-        contact.id === id ? updatedContact : contact,
-      );
-
-      resolve(updatedContact);
-    });
+    return deleteOperation;
   }
 }
 
