@@ -5,7 +5,10 @@ class ContactRepository {
     const direction = orderBy.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
 
     const rows = await db.query(
-      `SELECT * FROM contacts ORDER BY name ${direction}`,
+      `
+        SELECT * FROM contacts
+        ORDER BY name ${direction}
+      `,
     );
 
     return rows;
@@ -19,6 +22,7 @@ class ContactRepository {
       `,
       [id],
     );
+
     return row;
   }
 
@@ -53,6 +57,7 @@ class ContactRepository {
         UPDATE contacts
         SET name = $1, email = $2, phone = $3, category_id = $4
         WHERE id = $5
+        RETURNING *
       `,
       [name, email, phone, category_id, id],
     );

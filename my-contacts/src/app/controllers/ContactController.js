@@ -12,7 +12,9 @@ class ContactController {
     const contact = await ContactRepository.findById(id);
 
     if (!contact) {
-      return response.status(404).json({ error: 'User not found' }); // 404: Not Found
+      return response
+        .status(404) // 404: Not Found
+        .json({ error: 'User not found' });
     }
 
     response.json(contact);
@@ -66,7 +68,7 @@ class ContactController {
     if (contactByEmail && contactByEmail.id !== id) {
       return response
         .status(400) // 400: Bad Request
-        .json({ error: 'This e-mail is already in use+' });
+        .json({ error: 'This e-mail is already in use' });
     }
 
     const contact = await ContactRepository.update(id, {
