@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 
-import Button from './Button';
-import { ThemeContext } from './ThemeContext';
+import Button from '../Button';
+import { ThemeContext } from '../../context/ThemeContext';
 import * as styles from './Header.scss';
 
 export default function Header(props) {
