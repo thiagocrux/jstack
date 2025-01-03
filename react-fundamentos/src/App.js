@@ -4,6 +4,8 @@ import Post from './Post';
 import Header from './Header';
 import { ThemeProvider } from './ThemeContext';
 
+import './index.css';
+
 function App() {
   const [posts, setPosts] = useState([
     {
