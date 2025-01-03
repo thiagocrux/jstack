@@ -3,9 +3,7 @@ import React, { createContext, useState } from 'react';
 import Post from './Post';
 import Header from './Header';
 import { ThemeProvider } from './ThemeContext';
-
-import './index.css';
-import * as styles from './App.css';
+import * as styles from './App.scss';
 
 function App() {
   const [posts, setPosts] = useState([
@@ -15,6 +13,7 @@ function App() {
       subtitle: 'Sub#01',
       likes: 20,
       read: false,
+      removed: false,
     },
     {
       id: Math.random(),
@@ -22,6 +21,7 @@ function App() {
       subtitle: 'Sub#02',
       likes: 10,
       read: true,
+      removed: true,
     },
     {
       id: Math.random(),
@@ -29,6 +29,7 @@ function App() {
       subtitle: 'Sub#03',
       likes: 50,
       read: false,
+      removed: false,
     },
     {
       id: Math.random(),
@@ -36,6 +37,7 @@ function App() {
       subtitle: 'Sub#04',
       likes: 50,
       read: false,
+      removed: false,
     },
   ]);
 
@@ -51,8 +53,12 @@ function App() {
     ]);
   }
 
-  function handleRemovePost(id) {
-    setPosts((prevState) => prevState.filter((post) => id !== post.id));
+  function handleRemovePost(postId) {
+    setPosts((prevState) =>
+      prevState.map((post) =>
+        post.id === postId ? { ...post, removed: true } : post
+      )
+    );
   }
 
   return (
@@ -74,6 +80,7 @@ function App() {
             subtitle: post.subtitle,
             likes: post.likes,
             read: post.read,
+            removed: post.removed,
           }}
           onRemove={handleRemovePost}
         />
